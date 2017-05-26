@@ -90,6 +90,51 @@
 
     return false
   }
+  
+  Dropdown.prototype.show = function (e) {
+    var $this = $(this)
+    if ($this.is('.disabled, :disabled')) return
+
+    var $parent  = getParent($this)
+    var isActive = $parent.hasClass('open')
+
+    clearMenus()
+
+	if ('ontouchstart' in document.documentElement && !$parent.closest('.navbar-nav').length) {
+	// if mobile we use a backdrop because click events don't delegate
+	$(document.createElement('div'))
+	  .addClass('dropdown-backdrop')
+	  .insertAfter($(this))
+	  .on('click', clearMenus)
+	}
+
+	var relatedTarget = { relatedTarget: this }
+	$parent.trigger(e = $.Event('show.bs.dropdown', relatedTarget))
+
+	if (e.isDefaultPrevented()) return
+
+	$this
+	.trigger('focus')
+	.attr('aria-expanded', 'true')
+
+	$parent
+	.toggleClass('open')
+	.trigger($.Event('shown.bs.dropdown', relatedTarget))
+
+    return false
+  }
+  
+  Dropdown.prototype.hide = function (e) {
+    var $this = $(this)
+    if ($this.is('.disabled, :disabled')) return
+
+    var $parent  = getParent($this)
+    var isActive = $parent.hasClass('open')
+
+    clearMenus()
+	
+    return false
+  }
 
   Dropdown.prototype.keydown = function (e) {
     if (!/(38|40|27|32)/.test(e.which) || /input|textarea/i.test(e.target.tagName)) return
